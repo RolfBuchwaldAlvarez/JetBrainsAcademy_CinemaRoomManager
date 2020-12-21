@@ -14,18 +14,23 @@ public class Cinema {
         String[][] matrix;
         matrix = fillMatrix(rows, seatsPerRow);
 
-        printSeatsInScreenRoom(matrix, rows, seatsPerRow);
+        int selection = 9;
 
-        System.out.println("Enter a row number:");
-        int rowNum = sc.nextInt();
-        System.out.println("Enter a seat number in that row:");
-        int seatNum = sc.nextInt();
+        while (selection != 0) {
+            System.out.println("1. Show the seats");
+            System.out.println("2. Buy a ticket");
+            System.out.println("0. Exit");
+            selection = sc.nextInt();
 
-        int price = price(rows, seatsPerRow, rowNum);
+            switch (selection) {
+                case 1: printSeatsInScreenRoom(matrix, rows, seatsPerRow);
+                        break;
+                case 2: bookSeatInMatrix(matrix, sc, rows, seatsPerRow);
+                        break;
+                default: break;
+            }
+        }
 
-        System.out.printf("Ticket price: $%d", price);
-
-        printSeatsInScreenRoom(bookSeatInMatrix(matrix, rowNum, seatNum), rows, seatsPerRow);
     }
 
     public static int price(int rows, int seatsPerRow, int rowNum) {
@@ -95,8 +100,14 @@ public class Cinema {
         }
     }
 
-    public static String[][] bookSeatInMatrix(String[][] matrix, int rowNumber, int seatNum) {
-        matrix[rowNumber][seatNum] = "B";
+    public static String[][] bookSeatInMatrix(String[][] matrix, Scanner sc, int rows, int seatsPerRow) {
+        System.out.println("Enter a row number:");
+        int rowNum = sc.nextInt();
+        System.out.println("Enter a seat number in that row:");
+        int seatNum = sc.nextInt();
+        matrix[rowNum][seatNum] = "B";
+        int price = price(rows, seatsPerRow, rowNum);
+        System.out.println("Ticket price: $" + price);
         return matrix;
     }
 
