@@ -10,23 +10,32 @@ public class Cinema {
         int rows = sc.nextInt();
         System.out.println("Enter the number of seats in each row:");
         int seatsPerRow = sc.nextInt();
+        System.out.println();
 
         String[][] matrix;
         matrix = fillMatrix(rows, seatsPerRow);
 
-        int selection = 9;
+        int selection = 9; // Random number != {0, 1, 2, 3} for initializing.
+        int totalAmountOfSeats = rows * seatsPerRow;
+        int purchasedTickets = 0;
+        int currentIncome = 0;
+        int totalIncome = incomeCalculator(rows, seatsPerRow);
 
         while (selection != 0) {
             System.out.println("1. Show the seats");
             System.out.println("2. Buy a ticket");
+            System.out.println("3. Statistics");
             System.out.println("0. Exit");
             selection = sc.nextInt();
+            System.out.println();
 
             switch (selection) {
                 case 1: printSeatsInScreenRoom(matrix, rows, seatsPerRow);
                         break;
-                case 2: bookSeatInMatrix(matrix, sc, rows, seatsPerRow);
+                case 2: currentIncome += bookSeatInMatrix(matrix, sc, rows, seatsPerRow);
+                        purchasedTickets++;
                         break;
+                case 3: showStatistics(totalAmountOfSeats, purchasedTickets, currentIncome, totalIncome);
                 default: break;
             }
         }
@@ -51,19 +60,18 @@ public class Cinema {
         return price;
     }
 
-    public static void incomeCalculator(int rows, int seatsPerRow) {
-        int income = 0;
+    public static int incomeCalculator(int rows, int seatsPerRow) {
+        int income;
         if (rows * seatsPerRow <= 60) {
-            System.out.println("$" + (rows * seatsPerRow * 10));
+            income = rows * seatsPerRow * 10;
         } else {
             if (rows % 2 == 0) {
                 income = rows / 2 * seatsPerRow * 18;
-                System.out.println("$" + income);
             } else {
                 income = ((rows - 1) / 2) * seatsPerRow * 10 + (((rows - 1) / 2) + 1) * seatsPerRow * 8;
-                System.out.println("$" + income);
             }
         }
+        return income;
     }
 
     public static String[][] fillMatrix(int rows, int seatsPerRow) {
@@ -100,15 +108,43 @@ public class Cinema {
         }
     }
 
-    public static String[][] bookSeatInMatrix(String[][] matrix, Scanner sc, int rows, int seatsPerRow) {
+    public static int bookSeatInMatrix(String[][] matrix, Scanner sc, int rows, int seatsPerRow) {
         System.out.println("Enter a row number:");
         int rowNum = sc.nextInt();
         System.out.println("Enter a seat number in that row:");
         int seatNum = sc.nextInt();
+
+        if (rowNum >= matrix.length || seatNum >= matrix[0].length) {
+            System.out.println();
+            System.out.println("Wrong input!");
+            System.out.println();
+            bookSeatInMatrix (matrix, sc, rows, seatsPerRow);
+            return price(rows, seatsPerRow, rowNum);
+        }
+
+        if (matrix[rowNum][seatNum].equals("B")) {
+            System.out.println();
+            System.out.println("That ticket has already been purchased!");
+            System.out.println();
+            bookSeatInMatrix (matrix, sc, rows, seatsPerRow);
+            return price(rows, seatsPerRow, rowNum);
+        }
+
         matrix[rowNum][seatNum] = "B";
         int price = price(rows, seatsPerRow, rowNum);
+        System.out.println();
         System.out.println("Ticket price: $" + price);
-        return matrix;
+        System.out.println();
+        return price;
     }
 
+    public static void showStatistics(int totalAmountOfSeats, int purchasedTickets, int currentIncome, int totalIncome) {
+        String percent = String.format("%.2f", (double) purchasedTickets * 100 / totalAmountOfSeats);
+
+        System.out.println("Number of purchased tickets: " + purchasedTickets);
+        System.out.println("Percentage: " + percent + "%");
+        System.out.println("Current income: $" + currentIncome);
+        System.out.println("Total income: $" + totalIncome);
+        System.out.println();
+    }
 }
